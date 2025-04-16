@@ -122,5 +122,32 @@ const updateProject = async (req, res) => {
     }
 };
 
+const updateProjectStatus = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
+  
+      if (!["Not Started", "In Progress", "Completed"].includes(status)) {
+        return res.status(400).json({ message: "Invalid status value" });
+      }
+  
+      const project = await Project.findById(id);
+      if (!project) {
+        return res.status(404).json({ message: "Project not found" });
+      }
+  
+      if (req.user.role !== "Project Leader") {
+        return res.status(403).json({ message: "Access denied" });
+      }
+  
+      project.status = status;
+      await project.save();
+  
+      res.status(200).json({ message: "Project status updated", project });
+    } catch (err) {
+      res.status(500).json({ message: "Server error", error: err.message });
+    }
+  };
+  
 
-module.exports = { createProject, getProjects, getDetailedProjects, getProjectLeaders, updateProject };
+module.exports = { createProject, getProjects, getDetailedProjects, getProjectLeaders, updateProject, updateProjectStatus };

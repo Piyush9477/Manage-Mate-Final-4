@@ -6,8 +6,12 @@ import { useTheme } from "../context/ThemeContext"; // Import ThemeContext
 
 const ProjectList = () => {
   const { user } = useAuth();
-  const { projects, fetchProjects } = useProject();
+  const { projects, fetchProjects, updateProjectStatus } = useProject();
   const { darkMode } = useTheme(); // Get darkMode state
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [showStatusModal, setShowStatusModal] = useState(false);
+  const [statusUpdate, setStatusUpdate] = useState("");
+
 
   useEffect(() => {
     if (user) {
@@ -66,30 +70,7 @@ const ProjectList = () => {
               <p className="text-sm">
                 <strong>Status:</strong> {project.status}
               </p>
-
-              {/* Multiple files Download Link for Project Leader */}
-              {project.files?.length > 0 && (
-                <div className="mt-2">
-                  <strong>Attachments:</strong>
-                  <ul className="list-disc list-inside mt-1">
-                    {project.files.map((file, index) => {
-                      const fileName = file.split("-").slice(1).join("-"); // Extract the original filename
-                      return (
-                        <li key={index}>
-                          <a
-                            href={`http://localhost:5001${file}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-400 underline hover:text-blue-500 transition"
-                          >
-                            {fileName}
-                          </a>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              )}
+              <p className="text-sm"><strong>Attached Documents: </strong>{project.files?.length ?? 0}</p>
 
               {/* Show "Edit Project" button only for Managers */}
               {user?.role === "Manager" && (
@@ -102,7 +83,7 @@ const ProjectList = () => {
                 </Link>
               )}
 
-              {/* Show "Create Task" & "View Tasks" only for Team Leaders */}
+              {/* Show "Create Task", "View Tasks" and "Update Status" only for Team Leaders */}
               {user?.role === "Project Leader" && (
                 <>
                   <Link
@@ -117,6 +98,16 @@ const ProjectList = () => {
                   >
                     View Tasks
                   </Link>
+                  <button
+                    onClick={() => {
+                      setSelectedProject(project);
+                      setStatusUpdate(project.status);
+                      setShowStatusModal(true);
+                    }}
+                    className="bg-indigo-500 text-white px-3 py-1 rounded hover:bg-indigo-700 transition mt-2 inline-block ml-2"
+                  >
+                    Update Status
+                  </button>
                 </>
               )}
 
@@ -130,6 +121,47 @@ const ProjectList = () => {
           ))
         )}
       </div>
+
+      {/* Show Status Modal */}
+      {showStatusModal && selectedProject && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className={`bg-gray-200 rounded-lg shadow-lg p-6 w-full max-w-lg`}>
+            <h2 className="text-2xl font-bold mb-4">Update Project Status</h2>
+            <p><strong>Name:</strong> {selectedProject.name}</p>
+            <p><strong>Description:</strong> {selectedProject.description}</p>
+            <p><strong>Deadline:</strong> {new Date(selectedProject.deadline).toLocaleDateString()}</p>
+            <p><strong>Status:</strong></p>
+            <select
+              value={statusUpdate}
+              onChange={(e) => setStatusUpdate(e.target.value)}
+              className="p-2 rounded border w-full my-2"
+            >
+              <option value="Not Started">Not Started</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Completed">Completed</option>
+            </select>
+
+            <div className="flex justify-end space-x-4 mt-4">
+              <button
+                onClick={async () => {
+                  const success = await updateProjectStatus(selectedProject._id, statusUpdate);
+                  if (success) setShowStatusModal(false);
+                }}
+                className="bg-blue-600 text-white px-4 py-2 rounded"
+              >
+                Save
+              </button>
+              <button
+                onClick={() => setShowStatusModal(false)}
+                className="bg-gray-400 text-white px-4 py-2 rounded"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };

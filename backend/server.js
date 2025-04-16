@@ -13,6 +13,7 @@ const taskRoutes = require("./src/routes/taskRoutes");
 const messageRoutes = require("./src/routes/messageRoutes");
 const meetingRoutes = require("./src/routes/meetingRoutes");  
 const dashboardRoutes = require('./src/routes/dashboard');
+const adminRoutes = require("./src/routes/adminRoutes");
 const Message = require("./src/models/Message");
 
 const app = express();
@@ -33,8 +34,9 @@ app.use("/auth", authRoutes);
 app.use("/project", projectRoutes);
 app.use("/tasks", taskRoutes);
 app.use("/messages", messageRoutes);
-app.use("/meetings", meetingRoutes);  // ✅ Added Meeting Routes
+app.use("/meetings", meetingRoutes);  
 app.use('/dashboard', dashboardRoutes);
+app.use("/admin", adminRoutes);
 app.use("/uploads", express.static("uploads"));
 
 const activeUsers = new Map();

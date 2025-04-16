@@ -159,6 +159,36 @@ export const ProjectProvider = ({children}) => {
             return false;
         }
     };
+
+    const updateProjectStatus = async (projectId, newStatus) => {
+        try {
+          const res = await fetch(`${projectAPI}/updateStatus/${projectId}`, {
+            method: "PUT",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            body: JSON.stringify({ status: newStatus }),
+          });
+      
+          if (!res.ok) {
+            const errorData = await res.json();
+            throw new Error(errorData.message || "Failed to update project status");
+          }
+      
+          const updated = await res.json();
+          setProjects((prev) =>
+            prev.map((proj) => (proj._id === projectId ? updated.project : proj))
+          );
+      
+          return true;
+        } catch (error) {
+          console.error("Error updating status:", error.message);
+          return false;
+        }
+      };
+      
     
       
     useEffect(() => {
@@ -181,7 +211,7 @@ export const ProjectProvider = ({children}) => {
     
 
     return( // loading update
-        <ProjectContext.Provider value={{user, setUser, leaders, loadingLeaders, projects, projectDetails, fetchProjects, fetchDetailedProject, createProject, updateProject}}> 
+        <ProjectContext.Provider value={{user, setUser, leaders, loadingLeaders, projects, projectDetails, fetchProjects, fetchDetailedProject, createProject, updateProject, updateProjectStatus}}> 
             {children}
         </ProjectContext.Provider>
     );

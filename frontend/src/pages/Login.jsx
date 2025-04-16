@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
-import logo from "../assets/clogo.png"; // Make sure the logo.png file is in the correct path
+import logo from "../assets/clogo.png"; 
 
 const Login = () => {
   const { login } = useAuth();
@@ -24,7 +24,13 @@ const Login = () => {
       setError("Invalid email or password!");
     } else {
       alert("User logged in successfully");
-      navigate("/dashboard");
+      
+      const userData = JSON.parse(localStorage.getItem("user"));
+      if (userData?.role === "Admin") {
+        navigate("/admin/dashboard");
+      } else {
+        navigate("/dashboard");
+      }
     }
   };
 

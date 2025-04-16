@@ -19,6 +19,10 @@ import DetailedProject from "./pages/DetailedProject";
 import { useAuth } from "./context/AuthContext"; 
 import Chat from "./components/Chat";
 import MeetingList from "./pages/MeetingList";
+import AdminProjects from "./pages/AdminProjects";
+import AdminUsers from "./pages/AdminUsers";
+import AdminDetailedProject from "./pages/AdminDetailedProject";
+import AdminDashboard from "./pages/AdminDashboard";
 
 function App() {
   const { user } = useAuth(); 
@@ -75,6 +79,10 @@ function App() {
       <Route path="/" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route element={<Layout/>}>
+        <Route path="/admin/projects" element={<AdminProjects />} />
+        <Route path="/admin/project/:projectId" element={<AdminDetailedProject />} />
+        <Route path="/admin/users" element={<AdminUsers />} />
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/all-users" element={<AllUsers />} />

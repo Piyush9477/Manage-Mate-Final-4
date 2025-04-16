@@ -1,6 +1,6 @@
 const express = require("express");
 const fs = require("fs"); // ✅ Import filesystem module
-const { createProject, getProjects, getDetailedProjects, getProjectLeaders, updateProject } = require("../controllers/projectController");
+const { createProject, getProjects, getDetailedProjects, getProjectLeaders, updateProject, updateProjectStatus } = require("../controllers/projectController");
 const { authMiddleware } = require("../middlewares/authMiddleware");
 const multer = require("multer");
 const path = require("path"); // multiple file upload
@@ -49,6 +49,7 @@ router.get("/details/:projectId", authMiddleware, getDetailedProjects);
 router.get("/leaders", authMiddleware, getProjectLeaders);
 // router.put("/updateProject/:id", authMiddleware, updateProject);
 router.put("/updateProject/:id", authMiddleware, upload.array("files", 10), updateProject);
+router.put("/updateStatus/:id", authMiddleware, updateProjectStatus);
 
 
 module.exports = router;

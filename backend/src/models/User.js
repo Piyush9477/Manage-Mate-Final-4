@@ -4,7 +4,7 @@ const userSchema = new mongoose.Schema({
     name: {type: String, required: true},
     email: {type: String, required: true, unique: true},
     password: {type: String, required: true},
-    role: {type: String, enum: ["Manager", "Project Leader", "Team Member"], required: true},
+    role: {type: String, enum: ["Admin", "Manager", "Project Leader", "Team Member"], required: true},
     assignedProject: [{type: mongoose.Schema.Types.ObjectId, ref: "Project"}]
 }, {timestamps: true});
 

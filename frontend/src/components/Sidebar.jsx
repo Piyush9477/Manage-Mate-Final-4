@@ -9,7 +9,7 @@ const Sidebar = () => {
   const { darkMode, setDarkMode } = useTheme();
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
-  const [meetingCount, setMeetingCount] = useState(0); // 🔹 Added state for meeting count
+  const [meetingCount, setMeetingCount] = useState(0); 
 
   useEffect(() => {
     if (user?.role === "Manager") {
@@ -17,11 +17,10 @@ const Sidebar = () => {
     }
   }, [user]);
 
-  // 🔹 Fetch Meetings Count
   useEffect(() => {
     const fetchMeetings = async () => {
       try {
-        const response = await fetch("http://localhost:5001/meetings"); // Adjust API route if needed
+        const response = await fetch("http://localhost:5001/meetings"); 
         const data = await response.json();
         setMeetingCount(data.length);
       } catch (error) {
@@ -35,19 +34,21 @@ const Sidebar = () => {
   }, [user]);
 
   const menuItems = [
-    { path: "/dashboard", label: "Dashboard", icon: <Home size={20} /> },
+    user?.role === "Manager" && { path: "/dashboard", label: "Dashboard", icon: <Home size={20} /> },
+    user?.role === "Project Leader" && { path: "/dashboard", label: "Dashboard", icon: <Home size={20} /> },
+    user?.role === "Team Member" && { path: "/dashboard", label: "Dashboard", icon: <Home size={20} /> },
     user?.role === "Manager" && { path: "/projects", label: "Projects", icon: <ClipboardList size={20} /> },
     user?.role === "Manager" && { path: "/add-project", label: "Add Project", icon: <PlusSquare size={20} /> },
     user?.role === "Project Leader" && { path: "/projects", label: "Projects", icon: <ClipboardList size={20} /> },
     user?.role === "Project Leader" && { path: "/view-tasks", label: "Tasks List", icon: <ClipboardList size={20} /> },
     user?.role === "Team Member" && { path: "/my-tasks", label: "My Tasks", icon: <ClipboardList size={20} /> },
-    { 
-      path: "/meetings", 
-      label: "Meetings", 
-      icon: <Calendar size={20} />, 
-      badge: meetingCount > 0 ? meetingCount : null // ✅ Show meeting count
-    },
-    { path: "/chat", label: "Chat", icon: <MessageSquare size={20} />, highlight: true },
+
+    user?.role === "Admin" && { path: "/admin/dashboard", label: "Dashboard", icon: <Home size={20} /> },
+    user?.role === "Admin" && { path: "/admin/projects", label: "Projects", icon: <ClipboardList size={20} /> },
+    user?.role === "Admin" && { path: "/admin/users", label: "Users", icon: <Users size={20} /> },
+
+    user?.role != "Admin" && { path: "/meetings", label: "Meetings", icon: <Calendar size={20} />, badge: meetingCount > 0 ? meetingCount : null },
+    user?.role != "Admin" && { path: "/chat", label: "Chat", icon: <MessageSquare size={20} />, highlight: true },
   ].filter(Boolean);
   
 
