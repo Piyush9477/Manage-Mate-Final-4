@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useTask } from "../context/TaskContext";
 
 const UpdateTask = () => {
   const { taskId } = useParams(); 
   const { tasks, projectName, fetchProjectName, updateTask } = useTask();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { from } = location.state || {};
   
   const [task, setTask] = useState(null);
   const [progress, setProgress] = useState(0);
@@ -28,7 +30,7 @@ const UpdateTask = () => {
       setSuccess(true);
       setTimeout(() => {
         setSuccess(false);
-        navigate("/my-tasks");
+        navigate(from || "/my-tasks");
       }, 1000);
     }
   };

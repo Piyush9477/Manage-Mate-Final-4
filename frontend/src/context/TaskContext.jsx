@@ -182,6 +182,34 @@ export const TaskProvider = ({children}) => {
         }
     }
 
+    const submitTask = async (taskId) => {
+        try {
+          const response = await fetch(`${taskAPI}/submit/${taskId}`, {
+            method: "PUT",
+            credentials: "include",
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          });
+      
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Failed to submit task");
+          }
+      
+          const result = await response.json();
+          setTasks((prev) =>
+            prev.map((t) => (t._id === taskId ? result.task : t))
+          );
+      
+          return true;
+        } catch (error) {
+          console.error("Error submitting task:", error.message);
+          return false;
+        }
+      };
+      
+
     useEffect(() => {
         const user = JSON.parse(localStorage.getItem("user")); // Check if user exists
     
@@ -202,7 +230,7 @@ export const TaskProvider = ({children}) => {
     
 
     return( // loading update
-        <TaskContext.Provider value={{members, loadingMembers, tasks, tasksByProject, projectName, fetchTasks, fetchTasksByProject, createTask, fetchProjectName, updateTask}}>
+        <TaskContext.Provider value={{members, loadingMembers, tasks, tasksByProject, projectName, fetchTasks, fetchTasksByProject, createTask, fetchProjectName, updateTask, submitTask}}>
             {children}
         </TaskContext.Provider>
     );

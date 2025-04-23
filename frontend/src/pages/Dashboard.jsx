@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { ClipboardList, Briefcase, CheckCircle, Hourglass } from "lucide-react";
+import { ClipboardList, Briefcase, CheckCircle, Hourglass, CircleDashed, CircleCheck } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
 import axios from 'axios';
 import { Bar, Pie } from 'react-chartjs-2';
@@ -13,7 +13,7 @@ import {
   Title,
   Tooltip,
   Legend,
-  ArcElement
+  ArcElement, 
 } from 'chart.js';
 
 ChartJS.register(
@@ -23,7 +23,7 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  ArcElement
+  ArcElement, 
 );
 
 const Dashboard = () => {
@@ -36,7 +36,10 @@ const Dashboard = () => {
     pendingTasks: 0,
     completedTasks: 0,
     assignedProjects: 0,
-    assignedTasks: 0
+    assignedTasks: 0,
+    projectsInProgress: 0,
+    projectsNotStarted: 0,
+    projectsCompleted: 0,
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -45,13 +48,11 @@ const Dashboard = () => {
     const fetchStats = async () => {
       try {
         const token = localStorage.getItem("token");
-        // console.log("Token sent:", token); // Debug log
         if (!token) throw new Error("No token found");
 
         const response = await axios.get("http://localhost:5001/dashboard/stats", {
           headers: { Authorization: `Bearer ${token}` }
         });
-        // console.log("Response data:", response.data); // Debug log
         setStats(response.data);
       } catch (error) {
         console.error("Error fetching stats:", error);
@@ -68,9 +69,15 @@ const Dashboard = () => {
     Manager: [
       { label: "Total Projects", value: stats.totalProjects, icon: <Briefcase size={28} />, link: "/projects" },
       { label: "Total Tasks", value: stats.totalTasks, icon: <ClipboardList size={28} />, link: "/tasks" },
+      { label: "Projects In Progress", value: stats.projectsInProgress, icon: <Hourglass size={28} /> },
+      { label: "Projects Not Started", value: stats.projectsNotStarted, icon: <CircleDashed size={28} /> },
+      { label: "Projects Completed", value: stats.projectsCompleted, icon: <CircleCheck size={28} /> },
     ],
     "Project Leader": [
       { label: "Assigned Projects", value: stats.assignedProjects, icon: <Briefcase size={28} />, link: "/projects" },
+      { label: "Projects In Progress", value: stats.projectsInProgress, icon: <Hourglass size={28} /> },
+      { label: "Projects Not Started", value: stats.projectsNotStarted, icon: <CircleDashed size={28} /> },
+      { label: "Projects Completed", value: stats.projectsCompleted, icon: <CircleCheck size={28} /> },
     ],
     "Team Member": [
       { label: "My Tasks", value: stats.assignedTasks, icon: <ClipboardList size={28} />, link: "/my-tasks" },
@@ -79,15 +86,67 @@ const Dashboard = () => {
     ],
   };
 
-  const barData = {
-    labels: ['Total Projects', 'Total Tasks', 'Pending Tasks', 'Completed Tasks'],
-    datasets: [
-      {
-        label: 'Tasks & Projects',
-        data: [stats.totalProjects, stats.totalTasks, stats.pendingTasks, stats.completedTasks],
-        backgroundColor: ['#36a2eb', '#ff6384', '#ffce56', '#4bc0c0'],
+  let barData;
+
+  if (user?.role === "Manager") {
+    barData = {
+      labels: ['Total Projects', 'In Progress', 'Not Started', 'Completed'],
+      datasets: [
+        {
+          label: 'Manager Projects',
+          data: [
+            stats.totalProjects,
+            stats.projectsInProgress || 0,
+            stats.projectsNotStarted || 0,
+            stats.projectsCompleted || 0
+          ],
+          backgroundColor: ['#36a2eb', '#ffce56', '#ff6384', '#4bc0c0']
+        }
+      ]
+    };
+  } else if (user?.role === "Project Leader") {
+    barData = {
+      labels: ['Assigned Projects', 'In Progress', 'Not Started', 'Completed'],
+      datasets: [
+        {
+          label: 'Leader Projects',
+          data: [
+            Math.round(stats.assignedProjects),
+            Math.round(stats.projectsInProgress || 0),
+            Math.round(stats.projectsNotStarted || 0),
+            Math.round(stats.projectsCompleted || 0)
+          ],
+          backgroundColor: ['#36a2eb', '#ffce56', '#ff6384', '#4bc0c0']
+        }
+      ]
+    };
+  } else if (user?.role === "Team Member") {
+    barData = {
+      labels: ['Total Tasks', 'Pending Tasks', 'Completed Tasks'],
+      datasets: [
+        {
+          label: 'My Tasks',
+          data: [
+            Math.round(stats.assignedTasks),
+            Math.round(stats.pendingTasks),
+            Math.round(stats.completedTasks)
+          ],
+          backgroundColor: ['#36a2eb', '#ffce56', '#4bc0c0']
+        }
+      ]
+    };
+  }
+
+  const barOptions = {
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          stepSize: 1,
+          callback: (value) => (Number.isInteger(value) ? value : null)
+        }
       }
-    ]
+    }
   };
 
   const pieData = {
@@ -155,20 +214,30 @@ const Dashboard = () => {
           ))}
         </div>
       )}
-
       <div className="w-full mt-8">
         <div className="flex justify-center">
           <h2 className="text-3xl font-bold mb-4 text-gray-900">Analytical Charts</h2>
         </div>
-        <div className="flex flex-col md:flex-row justify-center items-center gap-6">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-3xl">
-            <h3 className="text-2xl font-semibold mb-4">Tasks & Projects Overview</h3>
-            <Bar data={barData} />
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm">
-            <h3 className="text-2xl font-semibold mb-4">Task Distribution</h3>
-            <Pie data={pieData} />
-          </div>
+        <div className={`flex flex-col ${user?.role === "Team Member" ? "md:flex-row" : ""} justify-center items-center gap-6`}>
+          {barData && (
+            <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-3xl">
+              <h3 className="text-2xl font-semibold mb-4">
+                {user?.role === "Team Member"
+                  ? "My Task Overview"
+                  : user?.role === "Project Leader"
+                  ? "Assigned Project Overview"
+                  : "Project Management Overview"}
+              </h3>
+              <Bar data={barData} options={barOptions} />
+            </div>
+          )}
+
+          {user?.role === "Team Member" && (
+            <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm">
+              <h3 className="text-2xl font-semibold mb-4">Task Distribution</h3>
+              <Pie data={pieData} />
+            </div>
+          )}
         </div>
       </div>
     </div>

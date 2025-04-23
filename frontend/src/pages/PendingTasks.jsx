@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useTask } from "../context/TaskContext";
 
-const MyTasks = () => {
+const PendingTasks = () => {
     const { user } = useAuth();
     const { tasks, fetchTasks, submitTask } = useTask();
     const location = useLocation();
@@ -13,16 +13,18 @@ const MyTasks = () => {
             fetchTasks();
         }
     }, [user]);
+    
+    const pendingTasks = tasks.filter((task) => task.status !== "Completed");
 
     return(
         <div className="p-8 ml-64 text-white">
-            <h1 className="text-3xl font-bold mb-4 text-black">Tasks</h1>
+            <h1 className="text-3xl font-bold mb-4 text-black">Pending Tasks</h1>
             
-            {tasks.length === 0 ? (
-                <p className="text-gray-400">No tasks assigned yet.</p>
+            {pendingTasks.length === 0 ? (
+                <p className="text-gray-400">No pending tasks.</p>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {tasks.map((task) => (
+                    {pendingTasks.map((task) => (
                         <div key={task._id} className="bg-gray-800 p-6 rounded-lg shadow-lg">
                             <h2 className="text-xl font-semibold">{task.title}</h2>
                             <p className="text-gray-300">{task.description}</p>
@@ -63,4 +65,4 @@ const MyTasks = () => {
     );
 }
 
-export default MyTasks;
+export default PendingTasks;
