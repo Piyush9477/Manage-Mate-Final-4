@@ -12,7 +12,6 @@ const ProjectList = () => {
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [statusUpdate, setStatusUpdate] = useState("");
 
-
   useEffect(() => {
     if (user) {
       fetchProjects();
@@ -112,7 +111,8 @@ const ProjectList = () => {
               )}
 
               <Link
-                to = "/detailed-project" state={project._id}
+                to="/detailed-project"
+                state={project._id}
                 className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-700 transition mt-2 inline-block ml-2"
               >
                 View Details
@@ -125,7 +125,11 @@ const ProjectList = () => {
       {/* Show Status Modal */}
       {showStatusModal && selectedProject && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className={`bg-gray-200 rounded-lg shadow-lg p-6 w-full max-w-lg`}>
+          <div
+            className={`rounded-lg shadow-lg p-6 w-full max-w-lg transition-all ${
+              darkMode ? "bg-gray-800 text-white" : "bg-gray-200 text-black"
+            }`}
+          >
             <h2 className="text-2xl font-bold mb-4">Update Project Status</h2>
             <p><strong>Name:</strong> {selectedProject.name}</p>
             <p><strong>Description:</strong> {selectedProject.description}</p>
@@ -134,7 +138,9 @@ const ProjectList = () => {
             <select
               value={statusUpdate}
               onChange={(e) => setStatusUpdate(e.target.value)}
-              className="p-2 rounded border w-full my-2"
+              className={`p-2 rounded border w-full my-2 ${
+                darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-black border-gray-300"
+              }`}
             >
               <option value="Not Started">Not Started</option>
               <option value="In Progress">In Progress</option>
@@ -153,7 +159,9 @@ const ProjectList = () => {
               </button>
               <button
                 onClick={() => setShowStatusModal(false)}
-                className="bg-gray-400 text-white px-4 py-2 rounded"
+                className={`px-4 py-2 rounded ${
+                  darkMode ? "bg-gray-600 text-white" : "bg-gray-400 text-white"
+                }`}
               >
                 Cancel
               </button>
@@ -161,7 +169,6 @@ const ProjectList = () => {
           </div>
         </div>
       )}
-
     </div>
   );
 };

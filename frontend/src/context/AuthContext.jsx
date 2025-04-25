@@ -93,8 +93,6 @@ export const AuthProvider = ({ children }) => {
       setUser(userData);
       fetchUsers();
 
-      navigate("/dashboard");
-
       return true;
     } catch (error) {
       console.error("Login error:", error);
@@ -102,29 +100,36 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const register = async (name, email, password, role) => {
+  const register = async (name, email, password, role, profilePicture) => {
     try {
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("email", email);
+      formData.append("password", password);
+      formData.append("role", role);
+      if (profilePicture) {
+        formData.append("profilePicture", profilePicture);
+      }
+  
       const response = await fetch(`${authAPI}/register`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password, role }),
         credentials: "include",
+        body: formData, 
       });
-
+  
       const data = await response.json();
-
+  
       if (!response.ok) {
         throw new Error(data.message || "Registration failed");
       }
-
-      navigate("/");
-
+  
       return true;
     } catch (error) {
       console.error("Registration error:", error);
       return false;
     }
   };
+  
 
   const logout = async () => {
     try {
@@ -170,36 +175,43 @@ export const AuthProvider = ({ children }) => {
 
   const updateProfile = async (updatedFields) => {
     try {
+      const formData = new FormData();
+      for (const key in updatedFields) {
+        if (updatedFields[key]) {
+          formData.append(key, updatedFields[key]);
+        }
+      }
+  
       const response = await fetch(`${authAPI}/profile/edit`, {
         method: "PUT",
         credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedFields),
+        body: formData, // Don't set Content-Type here
       });
-
+  
       const data = await response.json();
-
+  
       if (!response.ok) {
         throw new Error(data.message || "Failed to update profile");
       }
-
+  
       if (data.user.name) {
         const updatedUser = { ...user, name: data.user.name };
         localStorage.setItem("user", JSON.stringify(updatedUser));
         setUser(updatedUser);
       }
-
+  
       setProfile((prevProfile) => ({
         ...prevProfile,
-        name: data.user.name || prevProfile.name,
+        ...data.user,
       }));
-
+  
       return { success: true, message: "Profile updated successfully" };
     } catch (error) {
       console.error("Profile update error:", error);
       return { success: false, message: error.message };
     }
   };
+  
 
   return (
     <AuthContext.Provider value={{

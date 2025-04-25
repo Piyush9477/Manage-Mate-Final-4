@@ -140,7 +140,7 @@ const Chat = () => {
                   onClick={() => setSelectedUser(u)}
                 >
                   <img
-                    src={`https://ui-avatars.com/api/?name=${u.name}&background=random&rounded=true`}
+                    src={u.profilePicture ? `http://localhost:5001${u.profilePicture}` : `https://ui-avatars.com/api/?name=${u.name}&background=random&rounded=true`}
                     alt={`${u.name}'s avatar`}
                     className="w-10 h-10 rounded-full"
                   />

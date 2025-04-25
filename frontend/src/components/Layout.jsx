@@ -24,7 +24,11 @@ const Layout = () => {
 
         <div className="absolute top-5 right-8 flex items-center space-x-4">
           <div className="cursor-pointer bg-blue-500 px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition-colors text-white flex items-center space-x-2" onClick={() => navigate("/profile")} >
-            <img src={"/default-profile.png"} alt="Profile" className="w-8 h-8 rounded-full"/>
+            <img 
+              src={profile?.profilePicture ? `http://localhost:5001${profile.profilePicture}` : "/default-profile.png"} 
+              alt="Profile" 
+              className="w-8 h-8 rounded-full"
+            />
             <span className="font-semibold">{profile?.name}</span>
           </div>
         </div>

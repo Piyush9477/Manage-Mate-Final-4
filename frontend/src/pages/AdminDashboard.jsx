@@ -34,14 +34,20 @@ const AdminDashboard = () => {
     <div className={`flex flex-col items-center p-8 ml-64 min-h-screen transition-all duration-300 ${
       darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-black"
     }`}>
-      <h1 className="text-4xl font-bold mb-4 text-gray-900">Welcome, {user?.name}</h1>
-      <p className="text-xl mb-4 text-gray-700">Role: {user?.role}</p>
+      <h1 className={`text-4xl font-bold mb-4 ${darkMode ? "text-white" : "text-gray-900"}`}>
+        Welcome, {user?.name}
+      </h1>
+      <p className={`text-xl mb-4 ${darkMode ? "text-gray-300" : "text-gray-700"}`}>
+        Role: {user?.role}
+      </p>
 
       {user?.role === "Admin" && (
         <>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-5xl">
             <div
-              className="p-6 rounded-lg shadow-lg bg-white text-black cursor-pointer"
+              className={`p-6 rounded-lg shadow-lg cursor-pointer ${
+                darkMode ? "bg-gray-800 text-white" : "bg-white text-black"
+              }`}
               onClick={() => navigate("/admin/projects")}
             >
               <div className="flex items-center space-x-4">
@@ -49,14 +55,16 @@ const AdminDashboard = () => {
                   <ClipboardList size={28} />
                 </div>
                 <div>
-                  <p className="text-gray-500 text-sm">Total Projects</p>
+                  <p className="text-gray-400 text-sm">Total Projects</p>
                   <h2 className="text-2xl font-bold">{adminProjects.length}</h2>
                 </div>
               </div>
             </div>
 
             <div
-              className="p-6 rounded-lg shadow-lg bg-white text-black cursor-pointer"
+              className={`p-6 rounded-lg shadow-lg cursor-pointer ${
+                darkMode ? "bg-gray-800 text-white" : "bg-white text-black"
+              }`}
               onClick={() => navigate("/admin/users")}
             >
               <div className="flex items-center space-x-4">
@@ -64,15 +72,17 @@ const AdminDashboard = () => {
                   <Users size={28} />
                 </div>
                 <div>
-                  <p className="text-gray-500 text-sm">Total Users</p>
+                  <p className="text-gray-400 text-sm">Total Users</p>
                   <h2 className="text-2xl font-bold">{adminUsers.length}</h2>
                 </div>
               </div>
             </div>
 
-            <div className="p-6 rounded-lg shadow-lg bg-white text-black">
+            <div className={`p-6 rounded-lg shadow-lg ${
+              darkMode ? "bg-gray-800 text-white" : "bg-white text-black"
+            }`}>
               <div className="flex flex-col gap-2">
-                <p className="text-gray-500 text-sm">User Roles</p>
+                <p className="text-gray-400 text-sm">User Roles</p>
                 <div className="flex justify-between">
                   <span>Managers:</span> <span>{roleCounts["Manager"]}</span>
                 </div>
@@ -88,10 +98,10 @@ const AdminDashboard = () => {
 
           <div className="w-full max-w-5xl mt-10">
             <h2 className="text-2xl font-bold mb-4">Recent Projects</h2>
-            <div className="bg-white rounded shadow overflow-x-auto">
+            <div className={`${darkMode ? "bg-gray-800 text-white" : "bg-white text-black"} rounded shadow overflow-x-auto`}>
               <table className="min-w-full">
                 <thead>
-                  <tr className="bg-gray-200 text-left">
+                  <tr className={`${darkMode ? "bg-gray-700" : "bg-gray-200"} text-left`}>
                     <th className="p-2">Project Name</th>
                     <th className="p-2">Manager</th>
                     <th className="p-2">Leader</th>
@@ -99,7 +109,7 @@ const AdminDashboard = () => {
                 </thead>
                 <tbody>
                   {[...adminProjects].slice(-3).reverse().map(project => (
-                    <tr key={project._id} className="border-t">
+                    <tr key={project._id} className="border-t border-gray-600">
                       <td className="p-2">{project.name}</td>
                       <td className="p-2">{project.managerId?.name || "-"}</td>
                       <td className="p-2">{project.projectLeader?.name || "-"}</td>

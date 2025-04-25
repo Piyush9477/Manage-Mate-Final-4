@@ -50,9 +50,19 @@ const Login = () => {
       toast.error("Incorrect email or password. Please try again.");
     } else {
       toast.success("Login Successful! Redirecting...");
-      setTimeout(() => {
-        navigate("/dashboard");
-      }, 3000); // 3 seconds
+      const user = JSON.parse(localStorage.getItem("user"));
+      // Checking if user has an admin role
+      if (user.role === "Admin") {
+        // Redirect to admin dashboard
+        setTimeout(() => {
+          navigate("/admin/dashboard");
+        }, 1000); // 3 seconds
+      } else {
+        // Redirect to user dashboard
+        setTimeout(() => {
+          navigate("/dashboard");
+        }, 1000); // 3 seconds
+      }
     }
   };
 

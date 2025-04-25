@@ -163,10 +163,10 @@ const Dashboard = () => {
     <div className={`flex flex-col items-center p-8 ml-64 min-h-screen transition-all duration-300 ${
       darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-black"
     }`}>
-      <h1 className="text-4xl font-bold mb-4 text-gray-900">
+      <h1 className={`text-4xl font-bold mb-4 ${darkMode ? "text-white" : "text-gray-900"}`}>
         Welcome, {user?.name}
       </h1>
-      <p className="text-xl mb-4 text-gray-700">Role: {user?.role}</p>
+      <p className={`text-xl mb-4 ${darkMode ? "text-white" : "text-gray-700"}`}>Role: {user?.role}</p>
 
       {user?.role === "Manager" && (
         <div className="bg-blue-800 text-white p-6 rounded-lg shadow-lg w-3/4 text-center mb-6">
@@ -206,7 +206,7 @@ const Dashboard = () => {
               <div className="flex items-center space-x-4">
                 <div className="p-4 bg-blue-500 text-white rounded-full">{stat.icon}</div>
                 <div>
-                  <p className="text-gray-500 text-sm">{stat.label}</p>
+                  <p className={`text-sm ${darkMode ? "text-white" : "text-gray-500"}`}>{stat.label}</p>
                   <h2 className="text-2xl font-bold">{stat.value}</h2>
                 </div>
               </div>
@@ -216,12 +216,12 @@ const Dashboard = () => {
       )}
       <div className="w-full mt-8">
         <div className="flex justify-center">
-          <h2 className="text-3xl font-bold mb-4 text-gray-900">Analytical Charts</h2>
+          <h2 className={`text-3xl font-bold mb-4 ${darkMode ? "text-white" : "text-gray-900"}`}>Analytical Charts</h2>
         </div>
         <div className={`flex flex-col ${user?.role === "Team Member" ? "md:flex-row" : ""} justify-center items-center gap-6`}>
           {barData && (
             <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-3xl">
-              <h3 className="text-2xl font-semibold mb-4">
+              <h3 className="text-2xl font-semibold mb-4 text-black">
                 {user?.role === "Team Member"
                   ? "My Task Overview"
                   : user?.role === "Project Leader"
@@ -234,7 +234,7 @@ const Dashboard = () => {
 
           {user?.role === "Team Member" && (
             <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm">
-              <h3 className="text-2xl font-semibold mb-4">Task Distribution</h3>
+              <h3 className="text-2xl font-semibold mb-4 text-black">Task Distribution</h3>
               <Pie data={pieData} />
             </div>
           )}

@@ -4,6 +4,7 @@ const User = require("../models/User");
 
 const register = async (req, res) => {
     const {name, email, password, role} = req.body;
+    const profilePicture = req.file ? `/uploads/profile-pictures/${req.file.filename}` : "";
 
     if(!name || !email || !password || !role){
         return res.status(400).json({message: "All fields are required"});
@@ -14,7 +15,7 @@ const register = async (req, res) => {
 
     try{
         const hashedPassword = await bcrypt.hash(password, 10);
-        user = new User({name, email, password: hashedPassword, role});
+        user = new User({name, email, password: hashedPassword, role, profilePicture});
         await user.save();  
 
         res.status(201).json({message: "User registered successfully"});
@@ -67,6 +68,7 @@ const getProfile = async (req, res) => {
             name: user.name,
             email: user.email,
             role: user.role,
+            profilePicture: user.profilePicture || null,
             created_at: new Date(user.createdAt).toLocaleString()
         });
     }
@@ -93,9 +95,13 @@ const editProfile = async (req, res) => {
             user.password = hashedPassword;
         }
 
+        if (req.file) {
+            user.profilePicture = `/uploads/profile-pictures/${req.file.filename}`;
+        }
+
         await user.save();
 
-        res.json({ message: "Profile updated successfully", user: { name: user.name, email: user.email, role: user.role } });
+        res.json({ message: "Profile updated successfully", user: { name: user.name, email: user.email, role: user.role, profilePicture: user.profilePicture || null } });
     } catch (err) {
         res.status(500).json({ message: "Server Error", err });
     }

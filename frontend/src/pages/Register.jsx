@@ -4,7 +4,7 @@ import { useNavigate, Link } from "react-router-dom";
 import logo from "../assets/clogo.png";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-  
+
 const Register = () => {
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -15,6 +15,10 @@ const Register = () => {
     password: "",
     role: "Manager",
   });
+
+  // 👇 New state for profile image preview
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [profilePicture, setProfilePicture] = useState(null);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -42,20 +46,21 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     const validationError = validateForm();
     if (validationError) {
       toast.error(validationError);
       return;
     }
-  
+
     const success = await register(
       formData.name,
       formData.email,
       formData.password,
-      formData.role
+      formData.role,
+      profilePicture
     );
-  
+
     if (!success) {
       toast.error("Registration failed! Please try again.");
     } else {
@@ -65,7 +70,6 @@ const Register = () => {
       }, 3200);
     }
   };
-  
 
   const handleClear = () => {
     setFormData({
@@ -74,6 +78,18 @@ const Register = () => {
       password: "",
       role: "Manager",
     });
+    setSelectedImage(null); // Clear profile preview
+    setProfilePicture(null);
+  };
+
+  // Handle image upload
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setSelectedImage(imageUrl);
+      setProfilePicture(file);
+    }
   };
 
   return (
@@ -86,6 +102,21 @@ const Register = () => {
           <h1 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 text-center mb-6">
             Create Account
           </h1>
+
+          {/* Profile picture preview */}
+          <div className="mb-4">
+            <img
+              src={selectedImage ? selectedImage : "/default-profile.png"}
+              alt="Profile"
+              className="w-20 h-20 rounded-full object-cover mx-auto"
+            />
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="mt-2 text-sm text-gray-700"
+            />
+          </div>
 
           <form onSubmit={handleSubmit} className="flex flex-col w-full">
             <input
