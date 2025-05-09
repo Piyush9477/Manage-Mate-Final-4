@@ -86,7 +86,15 @@ const Profile = () => {
 
         <button
           className="mt-3 w-full bg-gray-900 text-white py-2 rounded-lg hover:bg-gray-800"
-          onClick={() => navigate("/dashboard")}
+          onClick={() => {
+            const user = JSON.parse(localStorage.getItem("user"));
+            if(user.role === "Admin") {
+              navigate("/admin/dashboard");
+            }
+            else{
+              navigate("/dashboard");
+            }
+          }}
         >
           Back to Dashboard
         </button>

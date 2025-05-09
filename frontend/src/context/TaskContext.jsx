@@ -103,7 +103,9 @@ export const TaskProvider = ({children}) => {
                 return;
             }
 
-            const filteredTasks = data.filter(task => task.projectId.projectLeader === user.id);
+            const filteredTasks = data.filter(
+                task => task.projectId && task.projectId.projectLeader === user.id
+            );
 
     
             // Group tasks by projectId

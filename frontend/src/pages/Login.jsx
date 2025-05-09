@@ -1,15 +1,17 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
-import logo from "../assets/clogo.png"; // Ensure the correct path
+import logo from "../assets/clogo.png";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 
 const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const validateEmail = (email) => {
     const emailRegex =
@@ -33,7 +35,7 @@ const Login = () => {
       toast.error("Email is required.");
       return;
     } else if (!validateEmail(trimmedEmail)) {
-      toast.error("Invalid email. Must be Gmail, Yahoo, Outlook, etc.");
+      toast.error("Invalid email. Please enter a valid email address.");
       return;
     }
 
@@ -41,7 +43,9 @@ const Login = () => {
       toast.error("Password is required.");
       return;
     } else if (!validatePassword(trimmedPassword)) {
-      toast.error("Password must be 6-15 characters long, with one number and one special character.");
+      toast.error(
+        "Password must be 8-15 characters long, include a number and special character."
+      );
       return;
     }
 
@@ -51,17 +55,14 @@ const Login = () => {
     } else {
       toast.success("Login Successful! Redirecting...");
       const user = JSON.parse(localStorage.getItem("user"));
-      // Checking if user has an admin role
       if (user.role === "Admin") {
-        // Redirect to admin dashboard
         setTimeout(() => {
           navigate("/admin/dashboard");
-        }, 1000); // 3 seconds
+        }, 1000);
       } else {
-        // Redirect to user dashboard
         setTimeout(() => {
           navigate("/dashboard");
-        }, 1000); // 3 seconds
+        }, 1000);
       }
     }
   };
@@ -69,12 +70,10 @@ const Login = () => {
   return (
     <div className="flex justify-center items-center h-screen bg-gray-200">
       <div className="bg-blue-300 bg-opacity-50 p-10 rounded-3xl shadow-2xl w-full max-w-4xl border border-gray-700 transform hover:scale-105 transition duration-500 flex">
-        {/* Left Section - Logo */}
         <div className="hidden md:flex md:w-1/2 justify-center items-center">
           <img src={logo} alt="Logo" className="w-3/4" />
         </div>
 
-        {/* Right Section - Login Form */}
         <div className="w-full md:w-1/2 flex flex-col items-center">
           <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600 text-center mb-6">
             MANAGEMATE
@@ -86,19 +85,37 @@ const Login = () => {
           <form onSubmit={handleSubmit} className="flex flex-col w-full">
             <input
               type="email"
-              placeholder="Email "
+              placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              minLength={8}
+              maxLength={35}
               className="mb-2 p-3 rounded-xl bg-gray-700 text-white outline-none focus:ring-2 focus:ring-blue-400 focus:bg-gray-900 w-full"
             />
 
-            <input
-              type="password"
-              placeholder="Password "
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="mb-2 p-3 rounded-xl bg-gray-700 text-white outline-none focus:ring-2 focus:ring-blue-400 focus:bg-gray-900 w-full"
-            />
+            <div className="relative mb-4">
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                minLength={8}
+                maxLength={15}
+                className="w-full p-3 pr-10 rounded-xl bg-gray-700 text-white outline-none focus:ring-2 focus:ring-blue-400 focus:bg-gray-900"
+              />
+
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute top-1/2 right-3 transform -translate-y-1/2 text-white"
+              >
+                {showPassword ? (
+                  <EyeSlashIcon className="h-5 w-5" />
+                ) : (
+                  <EyeIcon className="h-5 w-5" />
+                )}
+              </button>
+            </div>
 
             <div className="flex gap-4 mt-4">
               <button
@@ -120,7 +137,6 @@ const Login = () => {
         </div>
       </div>
 
-      {/* Toast Notifications */}
       <ToastContainer position="top-center" autoClose={3000} />
     </div>
   );

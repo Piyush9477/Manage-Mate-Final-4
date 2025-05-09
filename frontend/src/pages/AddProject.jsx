@@ -17,28 +17,36 @@ const AddProject = () => {
 
   // multiple file upload
   const allowedFileTypes = [
-    "text/plain", "application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    "application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    "application/vnd.ms-powerpoint", "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-    "application/sql", "image/png", "image/jpeg"
+    "text/plain",
+    "application/pdf",
+    "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "application/vnd.ms-excel",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "application/vnd.ms-powerpoint",
+    "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    "application/sql",
+    "image/png",
+    "image/jpeg",
   ];
 
   // multiple file upload
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files);
-    const filteredFiles = selectedFiles.filter(file => allowedFileTypes.includes(file.type));
-  
+    const filteredFiles = selectedFiles.filter((file) =>
+      allowedFileTypes.includes(file.type)
+    );
+
     if (filteredFiles.length !== selectedFiles.length) {
       alert("Some files were not accepted due to invalid file type.");
     }
-  
-    setFiles(prevFiles => [...prevFiles, ...filteredFiles]); // Append new files to existing files
+
+    setFiles((prevFiles) => [...prevFiles, ...filteredFiles]); // Append new files to existing files
   };
-  
+
   const handleRemoveFile = (index) => {
-    setFiles(prevFiles => prevFiles.filter((_, i) => i !== index));
+    setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
   };
-  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -75,14 +83,18 @@ const AddProject = () => {
       }`}
     >
       <h2 className="text-2xl font-bold mb-4">Add New Project</h2>
-      {success && <p className="text-green-500 mb-4">Project added successfully!</p>}
+      {success && (
+        <p className="text-green-500 mb-4">Project added successfully!</p>
+      )}
       <form onSubmit={handleSubmit} encType="multipart/form-data">
         <div className="mb-4">
           <label className="block text-sm font-medium">Project Name</label>
           <input
             type="text"
             className={`w-full p-2 border rounded bg-transparent outline-none transition-colors ${
-              darkMode ? "border-gray-700 text-white" : "border-gray-300 text-black"
+              darkMode
+                ? "border-gray-700 text-white"
+                : "border-gray-300 text-black"
             }`}
             value={projectName}
             onChange={(e) => setProjectName(e.target.value)}
@@ -94,7 +106,9 @@ const AddProject = () => {
           <label className="block text-sm font-medium">Description</label>
           <textarea
             className={`w-full p-2 border rounded bg-transparent outline-none transition-colors ${
-              darkMode ? "border-gray-700 text-white" : "border-gray-300 text-black"
+              darkMode
+                ? "border-gray-700 text-white"
+                : "border-gray-300 text-black"
             }`}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
@@ -102,13 +116,17 @@ const AddProject = () => {
         </div>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium">Assign to Project Leader</label>
+          <label className="block text-sm font-medium">
+            Assign to Project Leader
+          </label>
           {loadingLeaders ? (
             <p>Loading leaders...</p>
           ) : (
             <select
               className={`w-full p-2 border rounded bg-transparent outline-none transition-colors ${
-                darkMode ? "border-gray-700 text-white" : "border-gray-300 text-black"
+                darkMode
+                  ? "border-gray-700 text-white"
+                  : "border-gray-300 text-black"
               }`}
               value={selectedLeader}
               onChange={(e) => setSelectedLeader(e.target.value)}
@@ -116,7 +134,11 @@ const AddProject = () => {
             >
               <option value="">Select Leader</option>
               {leaders.map((leader) => (
-                <option key={leader._id} value={leader._id} className={darkMode ? "text-black" : "text-black"}>
+                <option
+                  key={leader._id}
+                  value={leader._id}
+                  className={darkMode ? "text-black" : "text-black"}
+                >
                   {leader.name}
                 </option>
               ))}
@@ -126,12 +148,10 @@ const AddProject = () => {
 
         <div className="mb-4">
           <label className="block text-sm font-medium">Upload Files</label>
-          
+
           {/* Upload File Button (Only shown when no file is selected) */}
           {files.length === 0 && (
-            <label 
-              className="cursor-pointer bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 transition inline-block"
-            >
+            <label className="cursor-pointer bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 transition inline-block">
               Upload File
               <input
                 type="file"
@@ -148,10 +168,13 @@ const AddProject = () => {
             <div className="mt-2">
               <ul className="list-none">
                 {files.map((file, index) => (
-                  <li key={index} className="flex justify-between items-center bg-gray-200 px-3 py-2 rounded mt-1">
+                  <li
+                    key={index}
+                    className="flex justify-between items-center bg-gray-200 px-3 py-2 rounded mt-1"
+                  >
                     <span className="text-sm">{file.name}</span>
-                    <button 
-                      onClick={() => handleRemoveFile(index)} 
+                    <button
+                      onClick={() => handleRemoveFile(index)}
                       className="text-red-500 hover:text-red-700 text-lg font-bold"
                     >
                       ❌
@@ -164,9 +187,7 @@ const AddProject = () => {
 
           {/* Add More Files Button (Shown if at least one file is selected) */}
           {files.length > 0 && (
-            <label 
-              className="cursor-pointer bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700 transition mt-2 inline-block"
-            >
+            <label className="cursor-pointer bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700 transition mt-2 inline-block">
               Add More Files
               <input
                 type="file"
@@ -179,16 +200,27 @@ const AddProject = () => {
           )}
         </div>
 
-
         <div className="mb-4">
           <label className="block text-sm font-medium">Deadline</label>
-          <input
+          {/* <input
             type="date"
             className={`w-full p-2 border rounded bg-transparent outline-none transition-colors ${
               darkMode ? "border-gray-700 text-white" : "border-gray-300 text-black"
             }`}
             value={deadline}
             onChange={(e) => setDeadline(e.target.value)}
+            required
+          /> */}
+          <input
+            type="date"
+            className={`w-full p-2 border rounded bg-transparent outline-none transition-colors ${
+              darkMode
+                ? "border-gray-700 text-white"
+                : "border-gray-300 text-black"
+            }`}
+            value={deadline}
+            onChange={(e) => setDeadline(e.target.value)}
+            min={new Date().toISOString().split("T")[0]} // 👈 Restricts to today or later
             required
           />
         </div>

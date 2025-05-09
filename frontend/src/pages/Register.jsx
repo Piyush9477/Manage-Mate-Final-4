@@ -4,6 +4,7 @@ import { useNavigate, Link } from "react-router-dom";
 import logo from "../assets/clogo.png";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 
 const Register = () => {
   const { register } = useAuth();
@@ -16,9 +17,9 @@ const Register = () => {
     role: "Manager",
   });
 
-  // 👇 New state for profile image preview
   const [selectedImage, setSelectedImage] = useState(null);
   const [profilePicture, setProfilePicture] = useState(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -64,10 +65,10 @@ const Register = () => {
     if (!success) {
       toast.error("Registration failed! Please try again.");
     } else {
-      toast.success("Registration Successful! ...");
+      toast.success("Registration Successful! Redirecting...");
       setTimeout(() => {
         navigate("/");
-      }, 3200);
+      }, 3000);
     }
   };
 
@@ -78,11 +79,10 @@ const Register = () => {
       password: "",
       role: "Manager",
     });
-    setSelectedImage(null); // Clear profile preview
+    setSelectedImage(null);
     setProfilePicture(null);
   };
 
-  // Handle image upload
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -93,30 +93,16 @@ const Register = () => {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-200">
-      <div className="bg-blue-300 bg-opacity-50 p-10 rounded-3xl shadow-2xl w-full max-w-4xl border border-gray-700 flex">
+    <div className="flex justify-center items-center min-h-screen bg-gray-200">
+      <div className="bg-blue-300 bg-opacity-50 p-10 rounded-3xl shadow-2xl w-full max-w-4xl border border-gray-700 flex flex-col md:flex-row">
         <div className="hidden md:flex md:w-1/2 justify-center items-center">
           <img src={logo} alt="Logo" className="w-3/4" />
         </div>
+
         <div className="w-full md:w-1/2 flex flex-col items-center">
           <h1 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 text-center mb-6">
             Create Account
           </h1>
-
-          {/* Profile picture preview */}
-          <div className="mb-4">
-            <img
-              src={selectedImage ? selectedImage : "/default-profile.png"}
-              alt="Profile"
-              className="w-20 h-20 rounded-full object-cover mx-auto"
-            />
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              className="mt-2 text-sm text-gray-700"
-            />
-          </div>
 
           <form onSubmit={handleSubmit} className="flex flex-col w-full">
             <input
@@ -125,7 +111,8 @@ const Register = () => {
               placeholder="Full Name"
               value={formData.name}
               onChange={handleChange}
-              maxLength="15"
+              minLength="5"
+              maxLength="25"
               className="mb-4 p-3 rounded-xl bg-gray-700 text-white outline-none focus:ring-2 focus:ring-blue-400"
             />
             <input
@@ -134,17 +121,35 @@ const Register = () => {
               placeholder="Email"
               value={formData.email}
               onChange={handleChange}
+              minLength="12"
+              maxLength="55"
               className="mb-4 p-3 rounded-xl bg-gray-700 text-white outline-none focus:ring-2 focus:ring-blue-400"
             />
-            <input
-              type="password"
-              name="password"
-              placeholder="Password "
-              value={formData.password}
-              onChange={handleChange}
-              maxLength="15"
-              className="mb-4 p-3 rounded-xl bg-gray-700 text-white outline-none focus:ring-2 focus:ring-blue-400"
-            />
+
+            <div className="relative mb-4">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+                minLength="8"
+                maxLength="15"
+                className="w-full p-3 pr-10 rounded-xl bg-gray-700 text-white outline-none focus:ring-2 focus:ring-blue-400"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute top-1/2 right-3 transform -translate-y-1/2 text-white"
+              >
+                {showPassword ? (
+                  <EyeSlashIcon className="h-5 w-5" />
+                ) : (
+                  <EyeIcon className="h-5 w-5" />
+                )}
+              </button>
+            </div>
+
             <select
               name="role"
               value={formData.role}
@@ -156,6 +161,30 @@ const Register = () => {
               <option value="Team Member">Team Member</option>
             </select>
 
+            {/* Profile Image Upload Section */}
+            <div className="flex flex-col items-center mb-6">
+              <label className="cursor-pointer flex flex-col items-center justify-center w-full p-4 rounded-xl bg-gray-700 text-white hover:bg-gray-600">
+                {selectedImage ? (
+                  <img
+                    src={selectedImage}
+                    alt="Profile Preview"
+                    className="w-16 h-16 rounded-full object-cover mb-2"
+                  />
+                ) : (
+                  <div className="flex flex-col items-center">
+                    <span>Upload Profile Image</span>
+                  </div>
+                )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="hidden"
+                />
+              </label>
+            </div>
+
+            {/* Buttons */}
             <div className="flex justify-between gap-4">
               <button
                 type="submit"
@@ -182,7 +211,6 @@ const Register = () => {
         </div>
       </div>
 
-      {/* Toast Notifications */}
       <ToastContainer position="top-center" autoClose={3000} />
     </div>
   );
